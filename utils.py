@@ -1,5 +1,5 @@
-# utils.py
 import google.generativeai as genai
+
 from PIL import Image
 import io
 import logging

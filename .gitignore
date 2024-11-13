@@ -21,8 +21,6 @@ __pycache__/
 *.swp
 
 # Ignorar dependencias instaladas localmente
-*.egg-info/
-.eggs/
 dist/
 build/
 

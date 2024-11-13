@@ -51,7 +51,7 @@ class Config:
                 stop_sequences=["Usuario:", "Asistente:"]
             ),
             "vision": ModelConfig(
-                name="gemini-pro-vision",
+                name="gemini-1.5-flash-latest",
                 type=ModelType.VISION,
                 max_tokens=500,
                 temperature=0.4,

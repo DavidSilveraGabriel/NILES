@@ -14,7 +14,7 @@ import time
 from typing import Optional
 
 def initialize_session_state():
-    """Inicializa las variables de estado de la sesión"""
+    """Initializes the session state variables"""
     if "messages" not in st.session_state:
         st.session_state.messages = []
     if "config" not in st.session_state:
@@ -23,71 +23,71 @@ def initialize_session_state():
         st.session_state.error_count = 0
 
 def create_sidebar(config: Config):
-    """Crea y maneja la barra lateral de configuración"""
+    """Creates and manages the configuration sidebar"""
     with st.sidebar:
-        st.title("⚙️ Configuración")
+        st.title("⚙️ Configuration")
         
-        # Configuración del modelo de texto
-        st.subheader("Modelo de Texto")
+        # Text model configuration
+        st.subheader("Text Model")
         text_config = config.get_model_config("text")
         
         col1, col2 = st.columns(2)
         with col1:
             new_temp = st.slider(
-                "Temperatura",
+                "Temperature",
                 0.0, 1.0,
                 text_config.temperature,
-                help="Controla la creatividad de las respuestas"
+                help="Controls the creativity of responses"
             )
         with col2:
             new_tokens = st.slider(
-                "Máx. Tokens",
-                100, 4096,
+                "Max Tokens",
+                100, 500,
                 text_config.max_tokens,
-                help="Límite de longitud de respuesta"
+                help="Response length limit"
             )
 
-        # Configuración del modelo de visión
-        st.subheader("Modelo de Visión")
+        # Vision model configuration
+        st.subheader("Vision Model")
         vision_config = config.get_model_config("vision")
         top_p = st.slider(
             "Top P",
             0.0, 1.0,
             vision_config.top_p,
-            help="Controla la diversidad de las respuestas"
+            help="Controls the diversity of responses"
         )
         
-        # Actualizar configuraciones
+        # Update configurations
         config.update_model_params("text", temperature=new_temp, max_tokens=new_tokens)
         config.update_model_params("vision", top_p=top_p)
         
-        # Utilidades
-        st.subheader("Utilidades")
-        if st.button("🗑️ Limpiar Chat", use_container_width=True):
+        # Utilities
+        st.subheader("Utilities")
+        if st.button("🗑️ Clear Chat", use_container_width=True):
             st.session_state.messages = []
             st.experimental_rerun()
             
-        if st.button("🔄 Reiniciar Configuración", use_container_width=True):
+        if st.button("🔄 Reset Configuration", use_container_width=True):
             st.session_state.config = Config()
             st.experimental_rerun()
         
-        # Información del sistema
+        # System information
         st.divider()
-        st.caption("Información del Sistema")
-        st.info(f"Modelo Texto: {text_config.name}\nModelo Visión: {vision_config.name}")
+        st.caption("System Information")
+        st.info(f"Text Model: {text_config.name}\nVision Model: {vision_config.name}")
         
         if st.session_state.error_count > 0:
-            st.warning(f"Errores en la sesión: {st.session_state.error_count}")
+            st.warning(f"Session errors: {st.session_state.error_count}")
 
 def handle_chat_input(model: genai.GenerativeModel, prompt: str) -> Optional[str]:
-    """Maneja la entrada del chat y genera la respuesta"""
+    """Handles chat input and generates the response"""
     is_valid, error_message = validate_prompt(prompt)
     if not is_valid:
         st.error(error_message)
         return None
 
     try:
-        with st.spinner("Generando respuesta..."):
+        with st.spinner("Generating response..."):
             response = get_gemini_response(model, prompt)
             if isinstance(response, dict) and "error" in response:
                 st.error(response["error"])
@@ -95,8 +95,8 @@ def handle_chat_input(model: genai.GenerativeModel, prompt: str) -> Optional[str
                 return None
             return sanitize_output(response)
     except Exception as e:
-        logger.error(f"Error al generar respuesta: {str(e)}")
-        st.error(f"Error al generar respuesta: {str(e)}")
+        logger.error(f"Error generating response: {str(e)}")
+        st.error(f"Error generating response: {str(e)}")
         st.session_state.error_count += 1
         return None
 
@@ -106,9 +106,9 @@ def handle_image_analysis(
     image,
     metadata
 ) -> Optional[str]:
-    """Maneja el análisis de imágenes"""
+    """Handles image analysis"""
     try:
-        with st.spinner("Analizando imagen..."):
+        with st.spinner("Analyzing image..."):
             response = get_gemini_response(model, image_prompt, image)
             if isinstance(response, dict) and "error" in response:
                 st.error(response["error"])
@@ -116,24 +116,24 @@ def handle_image_analysis(
                 return None
             return sanitize_output(response)
     except Exception as e:
-        logger.error(f"Error en análisis de imagen: {str(e)}")
-        st.error(f"Error al analizar la imagen: {str(e)}")
+        logger.error(f"Error in image analysis: {str(e)}")
+        st.error(f"Error analyzing image: {str(e)}")
         st.session_state.error_count += 1
         return None
 
 def render_chat_messages():
-    """Renderiza los mensajes del chat"""
+    """Renders chat messages"""
     for message in st.session_state.messages:
         with st.chat_message(message["role"]):
             st.markdown(message["content"])
 
 def main():
     try:
-        # Inicialización
+        # Initialization
         initialize_session_state()
         config = st.session_state.config
         
-        # Configuración de la página
+        # Page configuration
         st.set_page_config(
             page_title=config.app.title,
             layout=config.app.layout,
@@ -145,29 +145,29 @@ def main():
             }
         )
 
-        # Inicialización de Gemini
+        # Gemini initialization
         if not initialize_gemini(config.api_key):
-            st.error("Error al inicializar Gemini. Por favor, verifica tu API key.")
+            st.error("Error initializing Gemini. Please verify your API key.")
             return
 
-        # Configuración de modelos
+        # Model configuration
         model = genai.GenerativeModel(config.get_model_config("text").name)
         model_vision = genai.GenerativeModel(config.get_model_config("vision").name)
 
-        # Interfaz de usuario
+        # User interface
         st.title(config.app.title)
         st.caption(config.app.description)
         
         # Sidebar
         create_sidebar(config)
 
-        # Pestañas principales
-        tab1, tab2 = st.tabs(["💭 Chat de Texto", "🖼️ Chat con Imágenes"])
+        # Main tabs
+        tab1, tab2 = st.tabs(["💭 Text Chat", "🖼️ Image Chat"])
 
         with tab1:
             render_chat_messages()
 
-            if prompt := st.chat_input("Escribe tu mensaje aquí...", key="text_input"):
+            if prompt := st.chat_input("Type your message here...", key="text_input"):
                 st.session_state.messages.append({"role": "user", "content": prompt})
                 with st.chat_message("user"):
                     st.markdown(prompt)
@@ -182,12 +182,12 @@ def main():
                         })
 
         with tab2:
-            st.write("📤 Sube una imagen y hazme preguntas sobre ella")
+            st.write("📤 Upload an image and ask me questions about it")
             
             uploaded_file = st.file_uploader(
-                "Elige una imagen...",
+                "Choose an image...",
                 type=config.app.supported_image_types,
-                help=f"Formatos soportados: {', '.join(config.app.supported_image_types)}"
+                help=f"Supported formats: {', '.join(config.app.supported_image_types)}"
             )
             
             if uploaded_file:
@@ -199,19 +199,19 @@ def main():
                     image, metadata = result
                     st.image(
                         image,
-                        caption=f"Imagen: {metadata.filename} ({metadata.size[0]}x{metadata.size[1]})",
+                        caption=f"Image: {metadata.filename} ({metadata.size[0]}x{metadata.size[1]})",
                         use_container_width=True
                     )
                     
                     col1, col2 = st.columns([3, 1])
                     with col1:
                         image_prompt = st.text_input(
-                            "Hazme una pregunta sobre la imagen:",
+                            "Ask me a question about the image:",
                             key="image_prompt"
                         )
                     with col2:
                         st.markdown("<br>", unsafe_allow_html=True)
-                        analyze_button = st.button("🔍 Analizar", use_container_width=True)
+                        analyze_button = st.button("🔍 Analyze", use_container_width=True)
                     
                     if image_prompt and analyze_button:
                         response = handle_image_analysis(
@@ -221,11 +221,11 @@ def main():
                             metadata
                         )
                         if response:
-                            st.markdown("**Análisis:**")
+                            st.markdown("**Analysis:**")
                             st.markdown(response)
                             
-                    # Mostrar metadata
-                    with st.expander("📋 Detalles de la imagen"):
+                    # Display metadata
+                    with st.expander("📋 Image Details"):
                         st.json({
                             "filename": metadata.filename,
                             "format": metadata.format,
@@ -236,9 +236,9 @@ def main():
                         })
 
     except Exception as e:
-        logger.error(f"Error en la aplicación: {str(e)}")
-        st.error(f"Ha ocurrido un error inesperado: {str(e)}")
-        if st.button("🔄 Reiniciar Aplicación"):
+        logger.error(f"Application error: {str(e)}")
+        st.error(f"An unexpected error has occurred: {str(e)}")
+        if st.button("🔄 Restart Application"):
             st.experimental_rerun()
 
 if __name__ == "__main__":
