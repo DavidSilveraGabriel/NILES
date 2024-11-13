@@ -145,5 +145,5 @@ Project Link: [https://github.com/DavidSilveraGabriel/NILES](https://github.com/
 - The Python community for the libraries used.  
 
 ---  
-Made with ❤️ by [DavidSilveraGabriel](https://github.com/DavidSilveraGabriel)  
->>>>>>> master
+Made with ❤️ by [DavidSilveraGabriel](https://github.com/DavidSilveraGabriel)  and powered by 🤖[Claude](https://claude.ai/)
+
