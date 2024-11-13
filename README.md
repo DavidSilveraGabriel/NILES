@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-# NILES
-Advanced multimodal chatbot that uses Gemini models to process both text and images.
-=======
 # NILES - Multimodal Chatbot with Gemini 🤖
 
 NILES is an advanced multimodal chatbot leveraging Gemini models to process both text and images. Built with a modular architecture and a clean interface, NILES delivers an intuitive and powerful chat experience.
