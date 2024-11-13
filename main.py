@@ -139,8 +139,8 @@ def main():
             layout=config.app.layout,
             initial_sidebar_state=config.app.initial_sidebar_state,
             menu_items={
-                'Get Help': 'https://github.com/tuuser/tuchatbot',
-                'Report a bug': 'https://github.com/tuuser/tuchatbot/issues',
+                'Get Help': 'https://github.com/DavidSilveraGabriel/NILES',
+                'Report a bug': 'https://github.com/DavidSilveraGabriel/NILES/issues',
                 'About': config.app.description
             }
         )
